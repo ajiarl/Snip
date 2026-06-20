@@ -28,7 +28,8 @@ export async function proxy(request: NextRequest) {
     }
 
     // Record click in a non-blocking way
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const rawIp = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const ip = rawIp.split(",")[0].trim();
     hashIP(ip).then(ipHash => {
       db.insert(clicks).values({
         linkId: link.id,
@@ -36,10 +37,12 @@ export async function proxy(request: NextRequest) {
       }).execute().catch(console.error);
     });
 
-    return NextResponse.redirect(link.url, { status: 307 });
+    const response = NextResponse.redirect(link.url, { status: 302 });
+    response.headers.set("Cache-Control", "no-store, max-age=0");
+    return response;
   } catch (error) {
     console.error("Proxy error:", error);
-    return NextResponse.next();
+    return NextResponse.rewrite(new URL("/not-found", request.url));
   }
 }
 

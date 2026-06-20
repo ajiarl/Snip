@@ -29,3 +29,11 @@ export const linksRelations = relations(links, ({ many }) => ({
   clicks: many(clicks),
   reports: many(reports),
 }));
+
+export const clicksRelations = relations(clicks, ({ one }) => ({
+  link: one(links, { fields: [clicks.linkId], references: [links.id] }),
+}));
+
+export const reportsRelations = relations(reports, ({ one }) => ({
+  link: one(links, { fields: [reports.linkId], references: [links.id] }),
+}));

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { links, clicks } from "@/drizzle/schema";
-import { eq, countDistinct, sql } from "drizzle-orm";
+import { eq, countDistinct, sql, count, and, gte } from "drizzle-orm";
+import { API_CONSTANTS } from "@/lib/constants";
 import { getAnonIdFromCookie } from "@/lib/anon-id";
 
 export async function GET(
@@ -30,12 +31,11 @@ export async function GET(
       );
     }
 
-    const allClicks = await db.query.clicks.findMany({
-      where: eq(clicks.linkId, link.id),
-      orderBy: (clicks, { desc }) => [desc(clicks.clickedAt)],
-    });
+    const totalResult = await db.select({ count: count() })
+      .from(clicks)
+      .where(eq(clicks.linkId, link.id));
 
-    const totalClicks = allClicks.length;
+    const totalClicks = totalResult[0]?.count || 0;
 
     const uniqueClicksResult = await db.select({ count: countDistinct(clicks.ipHash) })
       .from(clicks)
@@ -43,9 +43,26 @@ export async function GET(
 
     const uniqueClicks = uniqueClicksResult[0]?.count || 0;
 
-    const lastClickedAt = allClicks[0]?.clickedAt || null;
+    const lastClickResult = await db.query.clicks.findFirst({
+      where: eq(clicks.linkId, link.id),
+      orderBy: (clicks, { desc }) => [desc(clicks.clickedAt)],
+    });
 
-    const clicksByDay = allClicks.reduce((acc: Record<string, number>, click) => {
+    const lastClickedAt = lastClickResult?.clickedAt || null;
+
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - API_CONSTANTS.ANALYTICS_CUTOFF_DAYS);
+
+    const recentClicks = await db.select({ clickedAt: clicks.clickedAt })
+      .from(clicks)
+      .where(
+        and(
+          eq(clicks.linkId, link.id),
+          gte(clicks.clickedAt, cutoffDate)
+        )
+      );
+
+    const clicksByDay = recentClicks.reduce((acc: Record<string, number>, click) => {
       const date = new Date(click.clickedAt).toISOString().split("T")[0];
       acc[date] = (acc[date] || 0) + 1;
       return acc;
