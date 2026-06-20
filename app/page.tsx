@@ -7,6 +7,9 @@ import Link from "next/link";
 import QRCode from "@/components/QRCode";
 import ReportDialog from "@/components/ReportDialog";
 import { urlSchema, slugSchema } from "@/lib/validate-url";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { fetcher } from "@/lib/fetcher";
 
 export default function HomePage() {
   const [url, setUrl] = useState("");
@@ -39,26 +42,23 @@ export default function HomePage() {
         }
       }
 
-      const response = await fetch("/api/shorten", {
+      const shortenResult = await fetcher<{ slug: string; shortUrl: string; url: string }>("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           url,
           customSlug: customSlug || undefined,
         }),
-      });
+      }, "Gagal memperpendek URL");
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Gagal memperpendek URL");
+      if (!shortenResult) {
         return;
       }
 
       setResult({
-        shortUrl: data.shortUrl,
-        slug: data.slug,
-        url: data.url,
+        shortUrl: shortenResult.shortUrl,
+        slug: shortenResult.slug,
+        url: shortenResult.url,
       });
       setUrl("");
       setCustomSlug("");
@@ -83,21 +83,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col antialiased">
-      {/* TopNavBar */}
-      <header className="w-full top-0 sticky z-50 bg-background border-b border-[#222222]">
-        <div className="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-2xl font-bold text-[#bef227] tracking-tighter">
-              SNIP
-            </Link>
-            <nav className="hidden md:flex gap-6">
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-[#bef227] transition-all duration-200">
-                Dashboard
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-16 relative overflow-hidden">
@@ -175,7 +161,7 @@ export default function HomePage() {
           {result && (
             <div 
               data-testid="result-card"
-              className="w-full bg-[#0a0a0a] border border-[#bef227]/30 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
+              className="w-full bg-[#0a0a0a] border border-[#bef227]/30 rounded-xl p-6 flex flex-col md:flex-row items-start justify-between gap-6 relative"
             >
               <div className="absolute inset-0 bg-[#bef227]/5 pointer-events-none"></div>
               <div className="flex flex-col gap-2 z-10 w-full md:w-auto">
@@ -212,21 +198,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-10 bg-background border-t border-[#222222]">
-        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6">
-          <span className="text-sm font-bold">
-            © 2026 SNIP Link Management. Hak cipta dilindungi undang-undang.
-          </span>
-          <div className="flex gap-6 text-sm">
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Privasi
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Ketentuan
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

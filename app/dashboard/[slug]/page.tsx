@@ -42,7 +42,7 @@ export default function AnalyticsDetailPage() {
     setError(null);
     try {
       const response = await fetch(`/api/analytics/${slug}`);
-      const data = await response.json();
+      const analyticsResponse = await response.json();
 
       if (!response.ok) {
         let errorMessage = "Gagal memuat analytics";
@@ -51,14 +51,14 @@ export default function AnalyticsDetailPage() {
         } else if (response.status === 404) {
           errorMessage = "Link tidak ditemukan";
         } else {
-          errorMessage = data.error || errorMessage;
+          errorMessage = analyticsResponse.error || errorMessage;
         }
         
         setError({ status: response.status, message: errorMessage });
         toast.error(errorMessage);
         return;
       }
-      setAnalytics(data);
+      setAnalytics(analyticsResponse);
     } catch (error) {
       const errorMessage = "Terjadi kesalahan saat mengambil data analytics";
       setError({ status: 500, message: errorMessage });
@@ -91,23 +91,7 @@ export default function AnalyticsDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        {/* TopNavBar */}
-        <header className="w-full top-0 sticky z-50 bg-background border-b border-[#222222]">
-          <div className="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
-            <div className="flex items-center gap-6">
-              <Link href="/" className="text-2xl font-bold text-[#bef227] tracking-tighter">
-                SNIP
-              </Link>
-              <nav className="hidden md:flex gap-6">
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-[#bef227] transition-all duration-200">
-                  Dashboard
-                </Link>
-              </nav>
-            </div>
-          </div>
-        </header>
-
+      <>
         {/* Main Content with Skeleton */}
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
           <Link href="/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-on-surface transition-colors mb-8">
@@ -122,7 +106,7 @@ export default function AnalyticsDetailPage() {
 
           <SkeletonChart />
         </main>
-      </div>
+      </>
     );
   }
 
@@ -134,23 +118,7 @@ export default function AnalyticsDetailPage() {
     const errorMessage = error?.message || "Gagal memuat analytics";
     
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        {/* TopNavBar */}
-        <header className="w-full top-0 sticky z-50 bg-background border-b border-[#222222]">
-          <div className="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
-            <div className="flex items-center gap-6">
-              <Link href="/" className="text-2xl font-bold text-[#bef227] tracking-tighter">
-                SNIP
-              </Link>
-              <nav className="hidden md:flex gap-6">
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-[#bef227] transition-all duration-200">
-                  Dashboard
-                </Link>
-              </nav>
-            </div>
-          </div>
-        </header>
-
+      <>
         {/* Error Content */}
         <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 py-16 relative">
           {/* Atmospheric Background Glow */}
@@ -184,51 +152,12 @@ export default function AnalyticsDetailPage() {
             </Link>
           </div>
         </main>
-
-        {/* Footer */}
-        <footer className="w-full py-10 border-t border-[#222222] bg-background z-10 relative">
-          <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6 text-center md:text-left">
-            <div className="text-sm font-bold">
-              © 2026 SNIP Link Management. All rights reserved.
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-                Privacy
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-                Terms
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-                API Docs
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-                Status
-              </a>
-            </div>
-          </div>
-        </footer>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* TopNavBar */}
-      <header className="w-full top-0 sticky z-50 bg-background border-b border-[#222222]">
-        <div className="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-2xl font-bold text-[#bef227] tracking-tighter">
-              SNIP
-            </Link>
-            <nav className="hidden md:flex gap-6">
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-[#bef227] transition-all duration-200">
-                Dashboard
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Main Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
         <Link href="/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-on-surface transition-colors mb-8">
@@ -252,7 +181,7 @@ export default function AnalyticsDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Total Clicks Card */}
           <div
-            className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 flex flex-col items-center justify-center gap-4"
+            className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 flex flex-col items-center justify-center gap-4 shadow-[0_0_40px_-15px_rgba(190,242,39,0.15)]"
             style={{ background: "linear-gradient(145deg, rgba(27, 28, 28, 0.4) 0%, rgba(13, 14, 15, 0.8) 100%)", backdropFilter: "blur(12px)" }}
           >
             <BarChart3 className="w-10 h-10 text-[#bef227]" />
@@ -262,7 +191,7 @@ export default function AnalyticsDetailPage() {
 
           {/* Last Clicked & Created At */}
           <div
-            className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 flex flex-col justify-center gap-4"
+            className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 flex flex-col justify-center gap-4 shadow-[0_0_40px_-15px_rgba(190,242,39,0.1)]"
             style={{ background: "linear-gradient(145deg, rgba(27, 28, 28, 0.4) 0%, rgba(13, 14, 15, 0.8) 100%)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex items-center gap-3">
@@ -290,7 +219,7 @@ export default function AnalyticsDetailPage() {
 
         {/* Clicks per Day Chart */}
         <div
-          className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6"
+          className="bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 shadow-[0_0_40px_-15px_rgba(190,242,39,0.05)]"
           style={{ background: "linear-gradient(145deg, rgba(27, 28, 28, 0.4) 0%, rgba(13, 14, 15, 0.8) 100%)", backdropFilter: "blur(12px)" }}
         >
           <div className="flex justify-between items-center mb-4">
@@ -359,29 +288,6 @@ export default function AnalyticsDetailPage() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full py-10 border-t border-[#222222] bg-background z-10 relative">
-        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6 text-center md:text-left">
-          <div className="text-sm font-bold">
-            © 2026 SNIP Link Management. All rights reserved.
-          </div>
-          <div className="flex flex-wrap justify-center gap-6 text-sm">
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Privacy
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Terms
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              API Docs
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Status
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

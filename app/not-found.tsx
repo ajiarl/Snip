@@ -4,6 +4,7 @@ import { Link2Off, ArrowLeft, Headphones } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ReportDialog from "@/components/ReportDialog";
+import Footer from "@/components/Footer";
 
 export default function NotFound() {
   const pathname = usePathname();
@@ -37,7 +38,7 @@ export default function NotFound() {
           </div>
 
           {/* 404 Heading */}
-          <h1 className="text-6xl md:text-7xl font-bold text-[#bef227] uppercase tracking-widest" style={{ textShadow: '0px 0px 20px rgba(190, 242, 39, 0.25)' }}>
+          <h1 className="text-6xl md:text-7xl font-black text-[#bef227] uppercase tracking-widest" style={{ textShadow: '0px 0px 20px rgba(190, 242, 39, 0.25)' }}>
             404
           </h1>
 
@@ -82,27 +83,7 @@ export default function NotFound() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-10 border-t border-[#222222] bg-background z-10 relative">
-        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6 text-center md:text-left">
-          <div className="text-sm font-bold">
-            © 2026 SNIP Link Management. All rights reserved.
-          </div>
-          <div className="flex flex-wrap justify-center gap-6 text-sm">
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Privacy
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Terms
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              API Docs
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-[#bef227] underline transition-all">
-              Status
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
