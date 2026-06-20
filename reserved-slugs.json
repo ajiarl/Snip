@@ -20,5 +20,7 @@
   "public",
   "favicon",
   "robots",
-  "sitemap"
+  "sitemap",
+  "robots.txt",
+  "sitemap.xml"
 ]
