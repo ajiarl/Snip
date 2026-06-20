@@ -31,36 +31,33 @@ export async function GET(
       );
     }
 
-    const totalResult = await db.select({ count: count() })
-      .from(clicks)
-      .where(eq(clicks.linkId, link.id));
-
-    const totalClicks = totalResult[0]?.count || 0;
-
-    const uniqueClicksResult = await db.select({ count: countDistinct(clicks.ipHash) })
-      .from(clicks)
-      .where(eq(clicks.linkId, link.id));
-
-    const uniqueClicks = uniqueClicksResult[0]?.count || 0;
-
-    const lastClickResult = await db.query.clicks.findFirst({
-      where: eq(clicks.linkId, link.id),
-      orderBy: (clicks, { desc }) => [desc(clicks.clickedAt)],
-    });
-
-    const lastClickedAt = lastClickResult?.clickedAt || null;
-
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - API_CONSTANTS.ANALYTICS_CUTOFF_DAYS);
 
-    const recentClicks = await db.select({ clickedAt: clicks.clickedAt })
-      .from(clicks)
-      .where(
-        and(
-          eq(clicks.linkId, link.id),
-          gte(clicks.clickedAt, cutoffDate)
+    const [totalResult, uniqueClicksResult, lastClickResult, recentClicks] = await Promise.all([
+      db.select({ count: count() })
+        .from(clicks)
+        .where(eq(clicks.linkId, link.id)),
+      db.select({ count: countDistinct(clicks.ipHash) })
+        .from(clicks)
+        .where(eq(clicks.linkId, link.id)),
+      db.query.clicks.findFirst({
+        where: eq(clicks.linkId, link.id),
+        orderBy: (clicks, { desc }) => [desc(clicks.clickedAt)],
+      }),
+      db.select({ clickedAt: clicks.clickedAt })
+        .from(clicks)
+        .where(
+          and(
+            eq(clicks.linkId, link.id),
+            gte(clicks.clickedAt, cutoffDate)
+          )
         )
-      );
+    ]);
+
+    const totalClicks = totalResult[0]?.count || 0;
+    const uniqueClicks = uniqueClicksResult[0]?.count || 0;
+    const lastClickedAt = lastClickResult?.clickedAt || null;
 
     const clicksByDay = recentClicks.reduce((acc: Record<string, number>, click) => {
       const date = new Date(click.clickedAt).toISOString().split("T")[0];

@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, uuid, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const links = pgTable("links", {
@@ -9,14 +9,18 @@ export const links = pgTable("links", {
   disabled: boolean("disabled").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("links_anon_id_idx").on(table.anonId)
+]);
 
 export const clicks = pgTable("clicks", {
   id: uuid("id").defaultRandom().primaryKey(),
   linkId: uuid("link_id").notNull().references(() => links.id, { onDelete: "cascade" }),
   ipHash: text("ip_hash"),
   clickedAt: timestamp("clicked_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("clicks_link_id_idx").on(table.linkId)
+]);
 
 export const reports = pgTable("reports", {
   id: uuid("id").defaultRandom().primaryKey(),

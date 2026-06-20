@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
         linkId: link.id,
         ipHash,
       }).execute().catch(console.error);
-    });
+    }).catch(console.error);
 
     const response = NextResponse.redirect(link.url, { status: 302 });
     response.headers.set("Cache-Control", "no-store, max-age=0");

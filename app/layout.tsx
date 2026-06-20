@@ -13,7 +13,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://snip.to"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://snip.to"),
   title: "SNIP - Link Management",
   description: "Platform manajemen link berperforma tinggi untuk tim engineering modern. Perpendek, bagikan, dan lacak URL dengan aman.",
   keywords: ["link shortener", "url shortener", "perpendek link", "snip", "link management", "short url"],
