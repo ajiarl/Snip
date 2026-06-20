@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20", 10);
     const offset = (page - 1) * limit;
 
-    let query = db.query.links.findMany({
+    const query = db.query.links.findMany({
       where: and(
         eq(links.anonId, anonId),
         search

@@ -1,0 +1,5 @@
+[33m0a80d66[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m chore: add ESLint config and design reference
+[33mece57d2[m docs: open source readiness
+[33m787bf4a[m feat: URL shortening with validation and security (F-01, F-06)
+[33m3609f79[m feat: database schema and Drizzle setup
+[33m9718d69[m chore: initial project setup (Next.js 16, TypeScript, Tailwind, shadcn/ui)
