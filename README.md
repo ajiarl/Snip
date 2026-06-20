@@ -18,7 +18,7 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 ## ✨ Features
 
 - 🔗 **Shorten URL** — Generate short links with auto-generated or custom slugs
-- 🔄 **Redirect** — Fast edge-based redirects with fail-safe 404 handling
+- 🔄 **Redirect** — Fast redirects via dedicated Node.js middleware with fail-safe 404 handling
 - 📊 **Analytics** — Track total clicks, unique visitors, and daily trends with privacy-first IP hashing
 - 📈 **Web Analytics** — Privacy-first page view tracking via Cloudflare Web Analytics
 - 🐛 **Error Tracking** — Production error monitoring via Sentry with source map support
@@ -128,6 +128,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app running.
    - `SAFE_BROWSING_API_KEY`
    - `NEXT_PUBLIC_APP_URL` (your production domain)
    - `IP_HASH_SALT`
+   - `NEXT_PUBLIC_SENTRY_DSN` (your Sentry DSN for error tracking)
 4. Deploy!
 
 Vercel will automatically build and deploy your app. The same Supabase database is used for both local development and production.
@@ -194,7 +195,7 @@ snip/
 │   └── hash-ip.ts         # IP hashing for privacy
 ├── drizzle/               # Database schema & migrations
 │   └── schema.ts          # Drizzle schema definitions
-├── proxy.ts               # Redirect handler (edge runtime)
+├── proxy.ts               # Redirect handler (Node.js runtime)
 └── reserved-slugs.json    # Reserved slug list
 ```
 

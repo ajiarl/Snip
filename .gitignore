@@ -45,7 +45,7 @@ drizzle/migrations/
 
 # temporary and local files
 /design-reference/
-*.png
+/home_local.png
 *.cjs
 tatus
 AGENTS.md
