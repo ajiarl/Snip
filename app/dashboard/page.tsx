@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Plus, Edit, Trash2, ChevronLeft, ChevronRight, BarChart3 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, ChevronLeft, ChevronRight, BarChart3, Lock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { urlSchema } from "@/lib/validate-url";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -46,6 +47,9 @@ export default function DashboardPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [copiedSlug, setCopiedSlug] = useState(false);
 
   useEffect(() => {
     fetchLinks();
@@ -60,8 +64,8 @@ export default function DashboardPage() {
         ...(search && { search }),
       });
       const response = await fetch(`/api/links?${params}`);
-      const data = await response.json();
-      setLinks(data.links || []);
+      const linkListPayload = await response.json();
+      setLinks(linkListPayload.links || []);
     } catch (error) {
       toast.error("Gagal memuat daftar link");
     } finally {
@@ -77,6 +81,7 @@ export default function DashboardPage() {
   const confirmDelete = async () => {
     if (!linkToDelete) return;
 
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/links?id=${linkToDelete}`, {
         method: "DELETE",
@@ -92,6 +97,8 @@ export default function DashboardPage() {
       setLinkToDelete(null);
     } catch (error) {
       toast.error("Gagal menghapus link");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -105,6 +112,13 @@ export default function DashboardPage() {
   const handleEdit = async () => {
     if (!editingLink) return;
 
+    const urlValidation = urlSchema.safeParse(editUrl);
+    if (!urlValidation.success) {
+      toast.error(urlValidation.error.errors[0].message);
+      return;
+    }
+
+    setIsEditing(true);
     try {
       const response = await fetch("/api/links", {
         method: "PATCH",
@@ -117,16 +131,31 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to update");
+        const errorPayload = await response.json();
+        throw new Error(errorPayload.error || "Failed to update");
       }
 
-      const data = await response.json();
-      setLinks(links.map((l) => (l.id === editingLink.id ? data.link : l)));
+      const updatePayload = await response.json();
+      setLinks(links.map((l) => (l.id === editingLink.id ? updatePayload.link : l)));
       setIsEditModalOpen(false);
       toast.success("Link berhasil diperbarui");
     } catch (error: any) {
       toast.error(error.message || "Gagal memperbarui link");
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const handleCopySlug = async () => {
+    if (!editingLink) return;
+    try {
+      const shortUrl = `${window.location.origin}/${editingLink.slug}`;
+      await navigator.clipboard.writeText(shortUrl);
+      toast.success("Slug disalin");
+      setCopiedSlug(true);
+      setTimeout(() => setCopiedSlug(false), 2000);
+    } catch (error) {
+      toast.error("Gagal menyalin slug");
     }
   };
 
@@ -137,24 +166,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* TopNavBar */}
-      <header className="w-full top-0 sticky z-50 bg-background border-b border-[#222222]">
-        <div className="flex justify-between items-center w-full px-8 py-2 max-w-7xl mx-auto">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-2xl font-bold text-[#bef227] tracking-tighter">
-              SNIP
-            </Link>
-            <nav className="hidden md:flex gap-6">
-              <Link href="/dashboard" className="text-sm text-[#bef227] font-bold">
-                Dashboard
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
+    <>
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -279,8 +291,8 @@ export default function DashboardPage() {
       </main>
 
       {/* Edit Link Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="bg-[#0a0a0a] border border-[#222222] text-on-surface">
+      <Dialog open={isEditModalOpen} onOpenChange={(open) => !isEditing && setIsEditModalOpen(open)}>
+        <DialogContent className={`bg-[#0a0a0a]/95 backdrop-blur-xl border border-[#222222] text-on-surface shadow-[0_0_40px_-15px_rgba(190,242,39,0.15)] ${isEditing ? "[&>button]:pointer-events-none [&>button]:opacity-20" : ""}`}>
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-on-surface">Edit Link</DialogTitle>
             <DialogDescription className="text-muted-foreground">
@@ -290,11 +302,31 @@ export default function DashboardPage() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-on-surface">Slug (tidak bisa diubah)</label>
-              <Input
-                value={editingLink?.slug || ""}
-                disabled
-                className="bg-[#111111] border border-[#333333] text-muted-foreground cursor-not-allowed"
-              />
+              <div 
+                className="flex items-center gap-2 bg-[#111111] border border-[#333333] rounded-lg px-3 py-2 text-muted-foreground w-full select-all cursor-not-allowed relative"
+                style={{
+                  backgroundImage: "repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0.03) 10px, transparent 10px, transparent 20px)"
+                }}
+              >
+                <Lock className="w-4 h-4 text-muted-foreground/45 shrink-0" />
+                <span className="text-muted-foreground/30 font-mono select-none">snip.to/</span>
+                <span className="text-muted-foreground/80 font-mono font-medium truncate flex-1 select-all">
+                  {editingLink?.slug || ""}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopySlug}
+                  disabled={isEditing}
+                  className="p-3 hover:bg-[#222222] rounded transition-colors text-muted-foreground hover:text-on-surface disabled:opacity-50 shrink-0"
+                  title="Salin slug"
+                >
+                  {copiedSlug ? (
+                    <Check className="w-5 h-5 text-[#bef227]" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-on-surface">Destination URL</label>
@@ -302,44 +334,56 @@ export default function DashboardPage() {
                 type="url"
                 value={editUrl}
                 onChange={(e) => setEditUrl(e.target.value)}
-                className="bg-[#0a0a0a] border border-[#222222] text-on-surface focus:border-[#bef227] focus:ring-1 focus:ring-[#bef227]"
+                disabled={isEditing}
+                className="bg-[#0a0a0a] border border-[#222222] text-on-surface focus:border-[#bef227] focus:ring-1 focus:ring-[#bef227] disabled:opacity-50"
                 placeholder="https://example.com"
               />
             </div>
             <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="disabled"
-                checked={editDisabled}
-                onChange={(e) => setEditDisabled(e.target.checked)}
-                className="w-4 h-4 rounded border-[#222222] bg-[#0a0a0a] text-[#bef227] focus:ring-[#bef227]"
-              />
-              <label htmlFor="disabled" className="text-sm text-on-surface">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={editDisabled}
+                disabled={isEditing}
+                onClick={() => setEditDisabled(!editDisabled)}
+                className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#bef227] disabled:cursor-not-allowed disabled:opacity-50 ${
+                  editDisabled ? "bg-[#bef227]" : "bg-zinc-800"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-7 w-7 rounded-full shadow-lg ring-0 transition-transform duration-200 ${
+                    editDisabled ? "translate-x-[26px] bg-black" : "translate-x-0.5 bg-zinc-400"
+                  }`}
+                />
+              </button>
+              <span className="text-sm text-on-surface">
                 Nonaktifkan link (redirect akan jadi 404)
-              </label>
+              </span>
             </div>
           </div>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setIsEditModalOpen(false)}
-              className="border-[#222222] hover:bg-[#111111]"
+              disabled={isEditing}
+              className="border-[#222222] hover:bg-[#111111] uppercase tracking-wider text-xs font-semibold min-h-[44px]"
             >
-              Batal
+              BATAL
             </Button>
             <Button
               onClick={handleEdit}
-              className="bg-[#bef227] text-black font-bold hover:bg-[#c0f42a]"
+              disabled={isEditing}
+              className="bg-[#bef227] text-black font-bold hover:bg-[#c0f42a] uppercase tracking-wider text-xs font-semibold min-h-[44px]"
             >
-              Simpan
+              {isEditing ? "MENYIMPAN..." : "SIMPAN PERUBAHAN"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-[#0a0a0a] border border-[#222222]">
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => !isDeleting && setDeleteDialogOpen(open)}>
+        <AlertDialogContent className="bg-[#0a0a0a]/95 backdrop-blur-xl border border-[#222222] shadow-[0_0_40px_-15px_rgba(220,38,38,0.15)]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-on-surface">Hapus Link?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
@@ -347,18 +391,25 @@ export default function DashboardPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[#222222] hover:bg-[#111111]">
+            <AlertDialogCancel
+              disabled={isDeleting}
+              className="border-[#222222] hover:bg-[#111111]"
+            >
               Batal
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
+              disabled={isDeleting}
+              className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
             >
-              Hapus
+              {isDeleting ? "Menghapus..." : "Hapus"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
