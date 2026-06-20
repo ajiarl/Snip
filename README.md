@@ -11,9 +11,7 @@
 **[https://snipid.vercel.app](https://snipid.vercel.app)**
 
 Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supabase. Designed for developers who want full control over their data without sacrificing features or security.
-
-<!-- Screenshot akan ditambahkan di sini -->
-<!-- ![Snip Dashboard](./docs/screenshots/dashboard.png) -->
+![Snip Homepage](./docs/screenshots/homepage.png)
 
 ---
 
