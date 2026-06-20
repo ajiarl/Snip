@@ -1,11 +1,36 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { Geist } from "next/font/google";
 import "./globals.css";
 
+const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist",
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://snip.to"),
   title: "SNIP - Link Management",
-  description: "Perpendek. Bagikan. Lacak.",
+  description: "Platform manajemen link berperforma tinggi untuk tim engineering modern. Perpendek, bagikan, dan lacak URL dengan aman.",
+  keywords: ["link shortener", "url shortener", "perpendek link", "snip", "link management", "short url"],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "SNIP - Link Management",
+    description: "Platform manajemen link berperforma tinggi untuk tim engineering modern. Perpendek, bagikan, dan lacak URL dengan aman.",
+    url: "/",
+    siteName: "SNIP",
+    locale: "id_ID",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SNIP - Link Management",
+    description: "Platform manajemen link berperforma tinggi untuk tim engineering modern.",
+  },
 };
 
 export default function RootLayout({
@@ -14,8 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable}`}>
+      <body className="font-sans bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
