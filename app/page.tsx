@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import ShortenForm from "@/components/ShortenForm";
 import { getStats } from "@/lib/stats";
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const { totalLinks, totalClicks } = await getStats();
   const showStats = totalLinks !== null && totalClicks !== null;
