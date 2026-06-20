@@ -42,3 +42,9 @@ next-env.d.ts
 
 # drizzle
 drizzle/migrations/
+
+# temporary and local files
+/design-reference/
+*.png
+*.cjs
+tatus

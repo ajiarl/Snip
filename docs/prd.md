@@ -302,7 +302,8 @@ Migrasi dijalankan dengan `npx drizzle-kit generate` lalu `npx drizzle-kit migra
 | URL berbahaya (phishing/malware) disembunyikan di balik short link | Cek setiap URL baru ke Google Safe Browsing API sebelum link dibuat |
 | Spam/abuse — bot generate ribuan link | Rate limiting per IP di endpoint `/api/shorten` |
 | Slug bentrok dengan route aplikasi (`/api`, `/dashboard`) | Reserved slug list, divalidasi sebelum slug disimpan |
-| Open redirect / SSRF lewat skema URL aneh | Whitelist skema `http`/`https` saja, tolak `javascript:`, `data:`, `file:`, IP lokal/private (`127.0.0.1`, `169.254.x.x`, dll) |
+| Open redirect / SSRF lewat skema URL aneh | Whitelist skema `http`/`https` saja, tolak `javascript:`, `data:`, `file:`, IP lokal/private (`127.0.0.1`, `169.254.x.x`, dll); validasi hostname via `new URL()` untuk menangkap representasi integer/hex/IPv6 |
+| DNS Rebinding — domain publik yang berhasil dibuat saat shorten (karena hostname terlihat publik), namun kemudian DNS A Record-nya diubah attacker menjadi IP private (e.g. `127.0.0.1`) sehingga browser korban meng-akses endpoint internal saat klik redirect | **Accepted Risk / Known Limitation.** Validasi hostname dilakukan sekali saat link dibuat; tidak ada re-validasi DNS saat redirect di `proxy.ts` karena akan menambah latensi signifikan di setiap klik. Mitigasi parsial: Google Safe Browsing dapat mendeteksi domain yang diketahui melakukan DNS rebinding aktif. Penanganan penuh memerlukan TTL-based re-check atau interstitial warning page — di luar scope MVP. |
 | Data pribadi pengunjung (IP) tersimpan tanpa consent | Hash IP (SHA-256 + salt) sebelum disimpan, jangan simpan IP mentah |
 | Link berbahaya lolos scan awal (database threat berubah setiap saat) | Endpoint report abuse + flag `disabled` manual oleh maintainer |
 
