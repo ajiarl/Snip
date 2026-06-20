@@ -48,3 +48,6 @@ drizzle/migrations/
 *.png
 *.cjs
 tatus
+AGENTS.md
+# Sentry Config File
+.env.sentry-build-plugin

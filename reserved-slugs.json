@@ -22,5 +22,8 @@
   "robots",
   "sitemap",
   "robots.txt",
-  "sitemap.xml"
+  "sitemap.xml",
+  "monitoring",
+  "sentry-example-page",
+  "sentry-example-api"
 ]
