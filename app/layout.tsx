@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     title: "SNIP - Link Management",
     description: "Platform manajemen link berperforma tinggi untuk tim engineering modern.",
   },
+  verification: {
+    google: "WgDl3hxjaMnI8v8dDht2GuT3sbba4wPcYliPGQM66K4",
+  },
 };
 
 export default function RootLayout({
