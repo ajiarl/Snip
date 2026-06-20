@@ -87,44 +87,52 @@ export default function ShortenForm() {
     <div className="w-full flex flex-col gap-10">
       {/* Form Area */}
       <div className="w-full bg-[#0a0a0a] border border-[#222222] rounded-xl p-6 flex flex-col gap-6">
-        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 w-full">
-          <div className="flex-grow relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center">
-            <Link2 className="text-muted-foreground ml-3 h-5 w-5" />
-            <input
-              className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none"
-              placeholder="Tempel URL panjang Anda di sini..."
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
+          <div className="flex flex-col md:flex-row gap-4 w-full">
+            <div className="flex-grow relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center">
+              <Link2 className="text-muted-foreground ml-3 h-5 w-5" />
+              <input
+                className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none"
+                placeholder="Tempel URL panjang Anda di sini..."
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+            <button
+              type="submit"
               disabled={loading}
-            />
+              className="bg-[#bef227] text-black font-bold px-8 py-3 rounded-lg hover:bg-[#c0f42a] transition-colors whitespace-nowrap active:scale-95 transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Scissors className="h-5 w-5" />
+              {loading ? "Memproses..." : "Perpendek"}
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-[#bef227] text-black font-bold px-8 py-3 rounded-lg hover:bg-[#c0f42a] transition-colors whitespace-nowrap active:scale-95 transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Scissors className="h-5 w-5" />
-            {loading ? "Memproses..." : "Perpendek"}
-          </button>
-        </form>
 
-        <div className="flex items-center gap-4">
-          <div className="relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center w-full md:w-1/2">
-            <span className="text-muted-foreground pl-3 text-sm select-none font-mono">
-              snip.to/
-            </span>
-            <input
-              className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"
-              placeholder="slug-kustom (opsional)"
-              type="text"
-              value={customSlug}
-              onChange={(e) => setCustomSlug(e.target.value)}
-              disabled={loading}
-            />
+          <div className="flex items-center gap-4">
+            <div className="relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center w-full md:w-1/2">
+              <span className="text-muted-foreground pl-3 text-sm select-none font-mono">
+                snip.to/
+              </span>
+              <input
+                className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"
+                placeholder="slug-kustom (opsional)"
+                type="text"
+                value={customSlug}
+                onChange={(e) => setCustomSlug(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }}
+                disabled={loading}
+              />
+            </div>
           </div>
-        </div>
+        </form>
 
         {/* Trust Badge with Report Link */}
         <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
@@ -144,19 +152,19 @@ export default function ShortenForm() {
       {result && (
         <div 
           data-testid="result-card"
-          className="w-full bg-[#0a0a0a] border border-[#bef227]/30 rounded-xl p-6 flex flex-col md:flex-row items-start justify-between gap-6 relative"
+          className="w-full bg-[#0a0a0a] border border-[#bef227]/30 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative"
         >
           <div className="absolute inset-0 bg-[#bef227]/5 pointer-events-none"></div>
           <div className="flex flex-col gap-2 z-10 w-full md:w-auto">
             <span className="text-xs text-[#bef227] uppercase tracking-wider font-bold">
               BERHASIL DIPERPENDEK
             </span>
-            <div className="flex items-center gap-2 bg-[#111111] border border-[#333333] rounded-lg p-3">
+            <div className="flex items-center gap-2 bg-[#111111] border border-[#333333] rounded-lg p-3 w-full sm:w-auto sm:min-w-[300px] max-w-full">
               <a
                 href={result.shortUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-mono text-[#bef227] hover:underline truncate max-w-[200px] md:max-w-xs"
+                className="text-sm font-mono text-[#bef227] hover:underline truncate max-w-[200px] sm:max-w-xs"
               >
                 {result.shortUrl}
               </a>
@@ -168,11 +176,11 @@ export default function ShortenForm() {
                 <Copy className="h-4 w-4" />
               </button>
             </div>
-            <span className="text-xs font-mono text-muted-foreground/50 truncate max-w-[250px] md:max-w-sm">
+            <span className="text-xs font-mono text-muted-foreground/50 truncate max-w-full md:max-w-sm">
               Aslinya: {result.url}
             </span>
           </div>
-          <div className="flex items-start gap-4 z-10 w-full md:w-auto justify-end">
+          <div className="flex justify-center items-center z-10 w-full md:w-auto">
             <QRCode value={result.shortUrl} />
           </div>
         </div>
