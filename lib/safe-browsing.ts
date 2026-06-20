@@ -1,14 +1,14 @@
-const API_KEY = process.env.SAFE_BROWSING_API_KEY;
 const API_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find";
 
 export async function checkUrlSafety(url: string): Promise<{ safe: boolean; threats?: string[] }> {
-  if (!API_KEY) {
+  const apiKey = process.env.SAFE_BROWSING_API_KEY;
+  if (!apiKey) {
     console.warn("⚠️ SAFE_BROWSING_API_KEY not set - skipping URL safety check (DEV MODE)");
     return { safe: true };
   }
 
   try {
-    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+    const response = await fetch(`${API_URL}?key=${apiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -26,8 +26,9 @@ export async function checkUrlSafety(url: string): Promise<{ safe: boolean; thre
     });
 
     if (!response.ok) {
-      console.error("❌ Safe Browsing API error:", response.status, await response.text());
-      throw new Error(`Safe Browsing API returned ${response.status}`);
+      const errorText = await response.text();
+      console.warn(`⚠️ Safe Browsing API returned status ${response.status}: ${errorText}. Bypassing check (FAIL-OPEN).`);
+      return { safe: true };
     }
 
     const data = await response.json();
@@ -39,7 +40,7 @@ export async function checkUrlSafety(url: string): Promise<{ safe: boolean; thre
 
     return { safe: true };
   } catch (error) {
-    console.error("❌ Safe Browsing check failed (FAIL-CLOSED):", error);
-    throw new Error("Tidak bisa memverifikasi keamanan link saat ini, coba lagi sebentar.");
+    console.warn("⚠️ Safe Browsing API connection failed. Bypassing check (FAIL-OPEN). Error:", error);
+    return { safe: true };
   }
 }
