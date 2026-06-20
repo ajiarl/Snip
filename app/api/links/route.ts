@@ -4,6 +4,10 @@ import { links } from "@/drizzle/schema";
 import { eq, and, or, like, desc } from "drizzle-orm";
 import { getAnonIdFromCookie } from "@/lib/anon-id";
 import { urlSchema } from "@/lib/validate-url";
+import { checkUrlSafety } from "@/lib/safe-browsing";
+import { checkRateLimit } from "@/lib/ratelimit";
+import { validateOrigin } from "@/lib/csrf";
+import { API_CONSTANTS } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +19,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const limit = Math.min(parseInt(searchParams.get("limit") || API_CONSTANTS.DEFAULT_PAGINATION_LIMIT.toString(), 10), API_CONSTANTS.MAX_PAGINATION_LIMIT);
     const offset = (page - 1) * limit;
 
     const query = db.query.links.findMany({
@@ -46,6 +50,22 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  // Fix: CSRF check
+  if (!validateOrigin(request)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Fix: Rate limit — 10 req/menit per IP
+  const rawPatchIp = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const patchIp = rawPatchIp.split(",")[0].trim();
+  const patchRateLimit = await checkRateLimit(patchIp, API_CONSTANTS.RATE_LIMIT_SHORTEN_MAX_REQUESTS, API_CONSTANTS.RATE_LIMIT_WINDOW_MS);
+  if (!patchRateLimit.success) {
+    return NextResponse.json(
+      { error: "Batas percobaan terlampaui. Silakan coba lagi nanti." },
+      { status: 429 }
+    );
+  }
+
   try {
     const anonId = getAnonIdFromCookie(request.headers.get("cookie"));
     if (!anonId) {
@@ -86,6 +106,18 @@ export async function PATCH(request: NextRequest) {
           { status: 400 }
         );
       }
+
+      const safetyCheck = await checkUrlSafety(url);
+      if (!safetyCheck.safe) {
+        return NextResponse.json(
+          { 
+            error: "URL ini terdeteksi berbahaya dan tidak dapat dipersingkat",
+            threats: safetyCheck.threats 
+          },
+          { status: 400 }
+        );
+      }
+
       updates.url = url;
     }
 
@@ -99,6 +131,13 @@ export async function PATCH(request: NextRequest) {
       .where(eq(links.id, id))
       .returning();
 
+    if (!updatedLink) {
+      return NextResponse.json(
+        { error: "Gagal memperbarui link di database" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ link: updatedLink });
   } catch (error) {
     console.error("Update link error:", error);
@@ -110,6 +149,22 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  // Fix: CSRF check
+  if (!validateOrigin(request)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Fix: Rate limit — 10 req/menit per IP
+  const rawDeleteIp = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const deleteIp = rawDeleteIp.split(",")[0].trim();
+  const deleteRateLimit = await checkRateLimit(deleteIp, API_CONSTANTS.RATE_LIMIT_SHORTEN_MAX_REQUESTS, API_CONSTANTS.RATE_LIMIT_WINDOW_MS);
+  if (!deleteRateLimit.success) {
+    return NextResponse.json(
+      { error: "Batas percobaan terlampaui. Silakan coba lagi nanti." },
+      { status: 429 }
+    );
+  }
+
   try {
     const anonId = getAnonIdFromCookie(request.headers.get("cookie"));
     if (!anonId) {

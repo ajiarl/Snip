@@ -101,6 +101,93 @@ describe('urlSchema', () => {
         expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
       }
     });
+
+    // ── Alternative numeric representations (IP encoding bypass) ──────────────
+
+    it('should reject 127.0.0.1 represented as decimal integer (2130706433)', () => {
+      const result = urlSchema.safeParse('http://2130706433/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    it('should reject 127.0.0.1 represented as hex (0x7f000001)', () => {
+      const result = urlSchema.safeParse('http://0x7f000001/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    // ── IPv6 loopback and mapped IPv4 ─────────────────────────────────────────
+
+    it('should reject IPv6 loopback ::1', () => {
+      const result = urlSchema.safeParse('http://[::1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    it('should reject IPv6-mapped IPv4 loopback ::ffff:127.0.0.1', () => {
+      const result = urlSchema.safeParse('http://[::ffff:127.0.0.1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    it('should reject IPv6-mapped private IP ::ffff:192.168.1.1', () => {
+      const result = urlSchema.safeParse('http://[::ffff:192.168.1.1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    // ── IPv6 link-local: fe80::/10 ────────────────────────────────────────────
+
+    it('should reject IPv6 link-local fe80::1 (fe80::/10)', () => {
+      const result = urlSchema.safeParse('http://[fe80::1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    it('should reject IPv6 link-local fe80::dead:beef (fe80::/10)', () => {
+      const result = urlSchema.safeParse('http://[fe80::dead:beef]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    // ── IPv6 Unique Local Address: fc00::/7 ───────────────────────────────────
+
+    it('should reject IPv6 ULA starting with fc (fc00::/7)', () => {
+      const result = urlSchema.safeParse('http://[fc00::1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    it('should reject IPv6 ULA starting with fd (fd00::/8 within fc00::/7)', () => {
+      const result = urlSchema.safeParse('http://[fd12:3456:789a::1]/test');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors[0].message).toContain('Alamat IP privat tidak diizinkan');
+      }
+    });
+
+    // ── Sanity: public IPs must still be accepted ─────────────────────────────
+
+    it('should accept a valid public IP address (8.8.8.8)', () => {
+      const result = urlSchema.safeParse('http://8.8.8.8/test');
+      expect(result.success).toBe(true);
+    });
   });
 
   describe('invalid URL formats', () => {

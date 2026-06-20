@@ -2,6 +2,10 @@ interface RateLimitStore {
   [key: string]: { count: number; resetAt: number };
 }
 
+// NOTE: In-memory store — tidak persistent dan tidak shared antar serverless instances
+// (misal di Vercel, setiap cold-start instance punya store sendiri).
+// Ini adalah known trade-off yang disadari untuk skala portofolio MVP.
+// Untuk production traffic tinggi, upgrade ke Upstash Ratelimit (Redis-backed).
 const store: RateLimitStore = {};
 
 export async function checkRateLimit(

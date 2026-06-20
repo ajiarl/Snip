@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { links, reports } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/ratelimit";
+import { validateOrigin } from "@/lib/csrf";
+import { API_CONSTANTS } from "@/lib/constants";
 
 const reportSchema = z.object({
   slug: z.string().min(1, "Slug tidak boleh kosong"),
@@ -10,6 +13,22 @@ const reportSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Fix: CSRF check
+  if (!validateOrigin(request)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Fix: Rate limit — 5 req/menit per IP (report spam sangat jarang legitimate)
+  const rawIp = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const ip = rawIp.split(",")[0].trim();
+  const rateLimit = await checkRateLimit(ip, API_CONSTANTS.RATE_LIMIT_REPORT_MAX_REQUESTS, API_CONSTANTS.RATE_LIMIT_WINDOW_MS);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      { error: "Batas percobaan terlampaui. Silakan coba lagi nanti." },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
     const validation = reportSchema.safeParse(body);
