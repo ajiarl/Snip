@@ -1,0 +1,229 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SNIP - Link Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c5",
+                        "tertiary-fixed-dim": "#afc9e5",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-variant": "#343535",
+                        "on-primary-fixed": "#151f00",
+                        "surface-container-low": "#1b1c1c",
+                        "on-tertiary-fixed": "#001d32",
+                        "outline": "#8e937a",
+                        "on-primary-container": "#526c00",
+                        "outline-variant": "#444934",
+                        "on-primary-fixed-variant": "#3a4d00",
+                        "primary-fixed-dim": "#a6d700",
+                        "tertiary-fixed": "#cde5ff",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#121414",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-tertiary-container": "#4c657d",
+                        "primary-container": "#bef227",
+                        "on-error": "#690005",
+                        "on-primary": "#273500",
+                        "error-container": "#93000a",
+                        "tertiary": "#fdfcff",
+                        "surface-tint": "#a6d700",
+                        "on-surface": "#e3e2e2",
+                        "surface-container-highest": "#343535",
+                        "surface-container-high": "#292a2a",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "error": "#ffb4ab",
+                        "primary-fixed": "#c0f42a",
+                        "primary": "#fcffe8",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-bright": "#383939",
+                        "inverse-surface": "#e3e2e2",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-surface-variant": "#c4c9ae",
+                        "on-background": "#e3e2e2",
+                        "surface": "#121414",
+                        "on-tertiary": "#173348",
+                        "background": "#121414",
+                        "secondary-container": "#474746",
+                        "surface-container-lowest": "#0d0e0f",
+                        "inverse-on-surface": "#303031",
+                        "surface-container": "#1f2020",
+                        "on-tertiary-fixed-variant": "#2f4960",
+                        "tertiary-container": "#c8e3ff",
+                        "on-secondary": "#313030",
+                        "inverse-primary": "#4e6700"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "md": "24px",
+                        "xs": "8px",
+                        "lg": "40px",
+                        "margin": "32px",
+                        "xl": "64px",
+                        "sm": "16px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "display": ["Geist"],
+                        "code": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "label-md": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "code": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #000000;
+            color: #e3e2e2;
+        }
+        .glow-effect:focus-within {
+            box-shadow: 0 0 20px rgba(190, 242, 39, 0.15);
+            border-color: #bef227;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-background dark:bg-background border-b border-surface-variant dark:border-surface-variant">
+<div class="flex justify-between items-center w-full px-margin py-xs max-w-7xl mx-auto">
+<div class="flex items-center gap-md">
+<a class="text-headline-md font-headline-md font-bold text-primary dark:text-primary tracking-tighter" href="#">SNIP</a>
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:text-primary transition-all duration-200" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:text-primary transition-all duration-200" href="#">Analytics</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:text-primary transition-all duration-200" href="#">Dukungan</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-95 transition-transform flex items-center">
+
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center px-4 md:px-margin py-xl relative overflow-hidden">
+<!-- Subtle Background Glow -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+<div class="w-[600px] h-[600px] bg-primary-container rounded-full blur-[120px]"></div>
+</div>
+<div class="z-10 w-full max-w-3xl flex flex-col items-center text-center gap-lg">
+<div class="flex flex-col gap-sm">
+<h1 class="font-display text-display text-on-background">Perpendek. Bagikan. Lacak.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Platform manajemen link berperforma tinggi untuk tim engineering modern.</p>
+</div>
+<!-- Form Area -->
+<div class="w-full bg-[#0a0a0a] border border-[#222222] rounded-xl p-md flex flex-col gap-md">
+<div class="flex flex-col md:flex-row gap-sm w-full">
+<div class="flex-grow relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center">
+<span class="material-symbols-outlined text-on-surface-variant pl-sm" data-icon="link" style="font-variation-settings: 'FILL' 0;">link</span>
+<input class="w-full bg-transparent border-none text-on-background font-body-md text-body-md focus:ring-0 placeholder:text-on-surface-variant/50 p-sm outline-none" placeholder="Tempel URL panjang Anda di sini..." type="url">
+</div>
+<button class="bg-primary-container text-[#000000] font-label-md text-label-md font-bold px-lg py-sm rounded-lg hover:bg-primary-fixed transition-colors whitespace-nowrap active:scale-95 transition-transform flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined" data-icon="content_cut" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+                        Perpendek
+                    </button>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center w-full md:w-1/2">
+<span class="text-on-surface-variant pl-sm font-code text-code select-none">snip.to/</span>
+<input class="w-full bg-transparent border-none text-on-background font-code text-code focus:ring-0 placeholder:text-on-surface-variant/50 p-sm outline-none" placeholder="slug-kustom (opsional)" type="text">
+</div>
+</div>
+</div>
+<!-- Success Card (Simulated Active State) -->
+<div class="w-full bg-[#0a0a0a] border border-primary-container/30 rounded-xl p-md flex flex-col md:flex-row items-center justify-between gap-md relative overflow-hidden mt-md">
+<!-- Subtle active glow on success card -->
+<div class="absolute inset-0 bg-primary-container/5 pointer-events-none"></div>
+<div class="flex flex-col gap-xs z-10 w-full md:w-auto">
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-wider text-xs">BERHASIL DIPERPENDEK</span>
+<div class="flex items-center gap-sm bg-[#111111] border border-[#333333] rounded-lg p-sm">
+<a class="font-code text-code text-primary-container hover:underline truncate max-w-[200px] md:max-w-xs" href="#">snip.to/custom-slug</a>
+<button class="text-on-surface-variant hover:text-primary-container transition-colors ml-auto p-1" title="Copy to clipboard">
+<span class="material-symbols-outlined text-sm" data-icon="content_copy" style="font-variation-settings: 'FILL' 0;">content_copy</span>
+</button>
+</div>
+<span class="font-code text-code text-on-surface-variant/50 text-xs truncate max-w-[250px] md:max-w-sm mt-1">Aslinya: https://verylongurl.com/example/path?utm=campaign</span>
+</div>
+<div class="flex items-center gap-md z-10 w-full md:w-auto justify-end">
+<div class="w-16 h-16 bg-[#111111] border border-[#333333] rounded-lg p-1 flex items-center justify-center shrink-0">
+<!-- Simulated QR Code visual -->
+<div class="w-full h-full bg-cover bg-center rounded-sm opacity-80 mix-blend-screen" data-alt="A highly detailed, stark black and white digital representation of a QR code, perfectly square and symmetrical. It is set against a pure pitch-black background, creating an intense high-contrast aesthetic typical of modern developer tools. The white modules of the QR code glow faintly, suggesting a high-tech digital environment. The overall mood is precise, technical, and minimal." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBTLsoMU4IvEqCO1aBZ51cZ667Ao5A0J4mle6A_BSAYgR-4dqbDCOizrKWTEM1GPoruw4gVsFDA4_yof2q6J07wYTV3wch8gvW3qf-YLprVpiBIY20gb8OAkMzOa18l78JV0mRbUEXHEru_NItuARiDoNBEAgVDLSo2Mqe2SvWp4KJ8nwcFMTFdPj95o2Z3jjwgDc3hwUcBSOe-AHIG9zNgdeCPETcW2UJNMIlnupgxt2OHhsJyOJ5GgBl7K5s_eOsFjvHvRN7WgxRw')"></div>
+</div>
+<button class="bg-transparent border border-[#222222] text-on-surface font-label-md text-label-md px-sm py-xs rounded-lg hover:border-on-surface hover:bg-[#111111] transition-all flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="download" style="font-variation-settings: 'FILL' 0;">download</span>
+                        Unduh QR
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-lg bg-background dark:bg-background border-t border-surface-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin max-w-7xl mx-auto gap-md">
+<span class="text-on-surface font-bold font-body-md text-body-md">© 2024 SNIP Link Management. Hak cipta dilindungi undang-undang.</span>
+<div class="flex gap-md">
+<a class="text-on-secondary-container hover:text-primary underline transition-all font-label-md text-label-md" href="#">Privasi</a>
+<a class="text-on-secondary-container hover:text-primary underline transition-all font-label-md text-label-md" href="#">Ketentuan</a>
+<a class="text-on-secondary-container hover:text-primary underline transition-all font-label-md text-label-md" href="#">Dokumentasi API</a>
+<a class="text-on-secondary-container hover:text-primary underline transition-all font-label-md text-label-md" href="#">Status</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 md:hidden bg-surface-container-low/80 dark:bg-surface-container-low/80 backdrop-blur-md border-t border-surface-variant shadow-lg tap-highlight-transparent">
+<div class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3">
+<a class="flex flex-col items-center justify-center text-primary active:bg-surface-variant font-label-md-mobile text-label-md-mobile p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+                Beranda
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant font-label-md-mobile text-label-md-mobile p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="link" style="font-variation-settings: 'FILL' 0;">link</span>
+                Tautan
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant font-label-md-mobile text-label-md-mobile p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart" style="font-variation-settings: 'FILL' 0;">bar_chart</span>
+                Statistik
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant font-label-md-mobile text-label-md-mobile p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 0;">person</span>
+                Profil
+            </a>
+</div>
+</nav>
+
+
+
+
+</body></html>
