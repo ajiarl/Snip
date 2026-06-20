@@ -27,14 +27,16 @@ export const metadata: Metadata = {
     siteName: "SNIP",
     locale: "id_ID",
     type: "website",
+    images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "SNIP - Link Management",
     description: "Platform manajemen link berperforma tinggi untuk tim engineering modern.",
+    images: ["/og-image.png"],
   },
   verification: {
-    google: "WgDl3hxjaMnI8v8dDht2GuT3sbba4wPcYliPGQM66K4",
+    google: process.env.GOOGLE_VERIFICATION_TOKEN,
   },
 };
 

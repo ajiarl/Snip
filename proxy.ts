@@ -24,7 +24,7 @@ export async function proxy(request: NextRequest) {
     });
 
     if (!link || link.disabled) {
-      return NextResponse.rewrite(new URL("/not-found", request.url));
+      return NextResponse.rewrite(new URL("/not-found", process.env.NEXT_PUBLIC_APP_URL || "https://snip.to"));
     }
 
     // Record click in a non-blocking way
@@ -42,7 +42,7 @@ export async function proxy(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("Proxy error:", error);
-    return NextResponse.rewrite(new URL("/not-found", request.url));
+    return NextResponse.rewrite(new URL("/not-found", process.env.NEXT_PUBLIC_APP_URL || "https://snip.to"));
   }
 }
 

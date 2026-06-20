@@ -232,3 +232,6 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ---
 
 **Made with ❤️ by [Aji Arlando](https://github.com/ajiarl)**
+
+### SEO & Analytics
+- To verify your domain on Google Search Console, add your token to GOOGLE_VERIFICATION_TOKEN in your environment variables.

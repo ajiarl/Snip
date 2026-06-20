@@ -96,6 +96,7 @@ export default function ShortenForm() {
                 className="flex-1 bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none min-w-0"
                 placeholder="Tempel URL panjang Anda di sini..."
                 type="url"
+                data-testid="url-input"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 required
@@ -136,6 +137,7 @@ export default function ShortenForm() {
                 className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"
                 placeholder="slug-kustom (opsional)"
                 type="text"
+                data-testid="custom-slug-input"
                 value={customSlug}
                 onChange={(e) => setCustomSlug(e.target.value)}
                 onKeyDown={(e) => {

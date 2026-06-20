@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { links } from "@/drizzle/schema";
-import { eq, and, or, like, desc } from "drizzle-orm";
+import { eq, and, or, like, desc, sql } from "drizzle-orm";
 import { getAnonIdFromCookie } from "@/lib/anon-id";
 import { urlSchema } from "@/lib/validate-url";
 import { checkUrlSafety } from "@/lib/safe-browsing";
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const anonId = getAnonIdFromCookie(request.headers.get("cookie"));
     if (!anonId) {
-      return NextResponse.json({ links: [] });
+      return NextResponse.json({ links: [], total: 0, hasMore: false });
     }
 
     const { searchParams } = new URL(request.url);
@@ -22,24 +22,32 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get("limit") || API_CONSTANTS.DEFAULT_PAGINATION_LIMIT.toString(), 10), API_CONSTANTS.MAX_PAGINATION_LIMIT);
     const offset = (page - 1) * limit;
 
-    const query = db.query.links.findMany({
-      where: and(
-        eq(links.anonId, anonId),
-        search
-          ? or(
-              like(links.slug, `%${search}%`),
-              like(links.url, `%${search}%`)
-            )
-          : undefined
-      ),
+    const condition = and(
+      eq(links.anonId, anonId),
+      search
+        ? or(
+            like(links.slug, `%${search}%`),
+            like(links.url, `%${search}%`)
+          )
+        : undefined
+    );
+
+    const [countResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(links)
+      .where(condition);
+    const total = Number(countResult.count);
+
+    const allLinks = await db.query.links.findMany({
+      where: condition,
       orderBy: [desc(links.createdAt)],
       limit,
       offset,
     });
 
-    const allLinks = await query;
+    const hasMore = offset + allLinks.length < total;
 
-    return NextResponse.json({ links: allLinks });
+    return NextResponse.json({ links: allLinks, total, hasMore });
   } catch (error) {
     console.error("Get links error:", error);
     return NextResponse.json(
@@ -96,7 +104,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const updates: any = { updatedAt: new Date() };
+    const updates: Partial<typeof links.$inferInsert> = { updatedAt: new Date() };
     
     if (url !== undefined) {
       const validation = urlSchema.safeParse(url);

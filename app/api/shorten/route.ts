@@ -144,7 +144,18 @@ export async function POST(request: NextRequest) {
           );
         }
         // Auto-slug: retry sekali dengan slug baru
-        const retrySlug = generateSlug();
+        let retrySlug = generateSlug();
+        let retryAttempts = 0;
+        while (isReservedSlug(retrySlug) && retryAttempts < API_CONSTANTS.MAX_SLUG_GENERATION_ATTEMPTS) {
+          retrySlug = generateSlug();
+          retryAttempts++;
+        }
+        if (isReservedSlug(retrySlug)) {
+          return NextResponse.json(
+            { error: "Gagal membuat slug unik setelah beberapa percobaan." },
+            { status: 500 }
+          );
+        }
         const [retryLink] = await db.insert(links).values({ slug: retrySlug, url, anonId }).returning();
         if (!retryLink) {
           return NextResponse.json(

@@ -52,6 +52,8 @@ export default function DashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [copiedSlug, setCopiedSlug] = useState(false);
 
+  const [hasMore, setHasMore] = useState(false);
+
   useEffect(() => {
     fetchLinks();
   }, [page, search]);
@@ -67,6 +69,7 @@ export default function DashboardPage() {
       const response = await fetch(`/api/links?${params}`);
       const linkListPayload = await response.json();
       setLinks(linkListPayload.links || []);
+      setHasMore(linkListPayload.hasMore || false);
     } catch (error) {
       toast.error("Gagal memuat daftar link");
     } finally {
@@ -282,7 +285,7 @@ export default function DashboardPage() {
             <span className="text-sm text-on-surface">Halaman {page}</span>
             <button
               onClick={() => setPage(page + 1)}
-              disabled={links.length < 20}
+              disabled={!hasMore}
               className="p-2 text-muted-foreground hover:text-on-surface transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-5 h-5" />

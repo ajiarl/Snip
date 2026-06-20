@@ -45,7 +45,10 @@ export async function GET(
         where: eq(clicks.linkId, link.id),
         orderBy: (clicks, { desc }) => [desc(clicks.clickedAt)],
       }),
-      db.select({ clickedAt: clicks.clickedAt })
+      db.select({ 
+          date: sql<string>`DATE(${clicks.clickedAt})`, 
+          count: count() 
+        })
         .from(clicks)
         .where(
           and(
@@ -53,15 +56,17 @@ export async function GET(
             gte(clicks.clickedAt, cutoffDate)
           )
         )
+        .groupBy(sql`DATE(${clicks.clickedAt})`)
     ]);
 
     const totalClicks = totalResult[0]?.count || 0;
     const uniqueClicks = uniqueClicksResult[0]?.count || 0;
     const lastClickedAt = lastClickResult?.clickedAt || null;
 
-    const clicksByDay = recentClicks.reduce((acc: Record<string, number>, click) => {
-      const date = new Date(click.clickedAt).toISOString().split("T")[0];
-      acc[date] = (acc[date] || 0) + 1;
+    const clicksByDay = recentClicks.reduce((acc: Record<string, number>, row) => {
+      // row.date can be returned as string or Date depending on the DB driver
+      const dateString = String(row.date);
+      acc[dateString] = Number(row.count);
       return acc;
     }, {});
 

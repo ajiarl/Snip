@@ -24,7 +24,7 @@ test.describe('Homepage - Shorten Flow', () => {
     await page.goto('/');
     
     // Fill form with valid URL
-    await page.fill('input[placeholder*="Tempel URL"]', 'https://example.com/test-page');
+    await page.fill('[data-testid="url-input"]', 'https://example.com/test-page');
     
     // Click shorten button
     await page.click('button:has-text("Perpendek")');
@@ -45,7 +45,7 @@ test.describe('Homepage - Shorten Flow', () => {
     await page.goto('/');
     
     // Fill form with dangerous URL
-    await page.fill('input[placeholder*="Tempel URL"]', 'javascript:alert(1)');
+    await page.fill('[data-testid="url-input"]', 'javascript:alert(1)');
     
     // Click shorten button
     await page.click('button:has-text("Perpendek")');
@@ -66,8 +66,8 @@ test.describe('Homepage - Shorten Flow', () => {
     const randomSlug = `test-${Date.now()}`;
     
     // Fill URL and custom slug
-    await page.fill('input[placeholder*="Tempel URL"]', 'https://example.com/custom-slug-test');
-    await page.fill('input[placeholder*="slug-kustom"]', randomSlug);
+    await page.fill('[data-testid="url-input"]', 'https://example.com/custom-slug-test');
+    await page.fill('[data-testid="custom-slug-input"]', randomSlug);
     
     // Click shorten button
     await page.click('button:has-text("Perpendek")');
@@ -86,7 +86,7 @@ test.describe('Redirect Flow', () => {
     await page.goto('/');
     const destinationUrl = 'https://example.com/redirect-test';
     
-    await page.fill('input[placeholder*="Tempel URL"]', destinationUrl);
+    await page.fill('[data-testid="url-input"]', destinationUrl);
     await page.click('button:has-text("Perpendek")');
     
     await expect(page.locator('[data-testid="result-card"]')).toBeVisible({ timeout: 10000 });
@@ -117,7 +117,7 @@ test.describe('Dashboard Flow', () => {
     await page.goto('/');
     const testUrl = `https://example.com/dashboard-test-${Date.now()}`;
     
-    await page.fill('input[placeholder*="Tempel URL"]', testUrl);
+    await page.fill('[data-testid="url-input"]', testUrl);
     await page.click('button:has-text("Perpendek")');
     
     await expect(page.locator('[data-testid="result-card"]')).toBeVisible({ timeout: 10000 });
@@ -137,7 +137,7 @@ test.describe('Dashboard Flow', () => {
     await page.goto('/');
     const testUrl = `https://example.com/delete-test-${Date.now()}`;
     
-    await page.fill('input[placeholder*="Tempel URL"]', testUrl);
+    await page.fill('[data-testid="url-input"]', testUrl);
     await page.click('button:has-text("Perpendek")');
     
     await expect(page.locator('[data-testid="result-card"]')).toBeVisible({ timeout: 10000 });
@@ -165,7 +165,7 @@ test.describe('Validation Flow', () => {
   test('should reject URL with private IP (127.0.0.1)', async ({ page }) => {
     await page.goto('/');
     
-    await page.fill('input[placeholder*="Tempel URL"]', 'http://127.0.0.1/test');
+    await page.fill('[data-testid="url-input"]', 'http://127.0.0.1/test');
     await page.click('button:has-text("Perpendek")');
     
     // Verify error toast appears
@@ -176,8 +176,8 @@ test.describe('Validation Flow', () => {
   test('should reject too short custom slug', async ({ page }) => {
     await page.goto('/');
     
-    await page.fill('input[placeholder*="Tempel URL"]', 'https://example.com/test');
-    await page.fill('input[placeholder*="slug-kustom"]', 'ab'); // Too short (< 3 chars)
+    await page.fill('[data-testid="url-input"]', 'https://example.com/test');
+    await page.fill('[data-testid="custom-slug-input"]', 'ab'); // Too short (< 3 chars)
     
     await page.click('button:has-text("Perpendek")');
     

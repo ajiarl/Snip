@@ -35,7 +35,7 @@ export default function AnalyticsDetailPage() {
     if (slug) {
       fetchAnalytics();
     }
-  }, [slug, timeRange]);
+  }, [slug]);
 
   const fetchAnalytics = async () => {
     setLoading(true);
