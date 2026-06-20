@@ -35,7 +35,7 @@
   --secondary: 0 0% 78.4%;
   --secondary-foreground: 0 0% 19.2%;
   --muted: 0 0% 12.2%;
-  --muted-foreground: 56 8% 70.2%;
+  --muted-foreground: 56 8% 82%;
   --accent: 0 0% 12.2%;
   --accent-foreground: 0 0% 88.6%;
   --destructive: 0 71% 83%;
@@ -44,7 +44,7 @@
   --input: 0 0% 13.3%;
   --ring: 84 81% 74%;
   --surface-variant: 0 0% 20.4%;
-  --on-surface-variant: 56 8% 70.2%;
+  --on-surface-variant: 56 8% 82%;
   --primary-container: 84 81% 56%;
   --on-primary-container: 84 100% 20%;
 }

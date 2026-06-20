@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Link2, Scissors, Copy, Shield } from "lucide-react";
 import { toast } from "sonner";
-import QRCode from "@/components/QRCode";
+import dynamic from "next/dynamic";
+
+const QRCode = dynamic(() => import("@/components/QRCode"), {
+  ssr: false,
+  loading: () => <div className="w-32 h-32 bg-[#111111] animate-pulse rounded-lg" />,
+});
 import ReportDialog from "@/components/ReportDialog";
 import { urlSchema, slugSchema } from "@/lib/validate-url";
 import { fetcher } from "@/lib/fetcher";
@@ -86,7 +91,7 @@ export default function ShortenForm() {
           <div className="flex-grow relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center">
             <Link2 className="text-muted-foreground ml-3 h-5 w-5" />
             <input
-              className="w-full bg-transparent border-none text-on-background px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none"
+              className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none"
               placeholder="Tempel URL panjang Anda di sini..."
               type="url"
               value={url}
@@ -111,7 +116,7 @@ export default function ShortenForm() {
               snip.to/
             </span>
             <input
-              className="w-full bg-transparent border-none text-on-background px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"
+              className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"
               placeholder="slug-kustom (opsional)"
               type="text"
               value={customSlug}

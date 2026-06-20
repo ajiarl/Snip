@@ -12,22 +12,17 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-16 relative overflow-hidden">
-        {/* Subtle Background Glow */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <div className="w-[600px] h-[600px] bg-[#bef227] rounded-full blur-[120px]"></div>
-        </div>
-
+      <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-16 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(190,242,39,0.05)_0%,transparent_60%)]">
         <div className="z-10 w-full max-w-3xl flex flex-col items-center text-center gap-10">
           <div className="flex flex-col gap-4">
-            <h1 className="text-5xl md:text-6xl font-bold text-on-background leading-tight tracking-tight">
+            <h1 className="text-5xl md:text-6xl font-bold text-foreground leading-tight tracking-tight">
               Perpendek. Bagikan. Lacak.
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Platform manajemen link berperforma tinggi untuk tim engineering modern.
             </p>
             {showStats && (
-              <p className="text-xs text-muted-foreground/60 font-medium select-none mt-1">
+              <p className="text-xs text-muted-foreground/85 font-medium select-none mt-1">
                 🔗 {totalLinks} link sudah diperpendek · {totalClicks} total klik
               </p>
             )}
