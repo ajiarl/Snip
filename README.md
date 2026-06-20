@@ -5,7 +5,10 @@
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
+
+## 🔗 Live Demo
+**[https://snipid.vercel.app](https://snipid.vercel.app)**
 
 Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supabase. Designed for developers who want full control over their data without sacrificing features or security.
 
@@ -19,6 +22,8 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 - 🔗 **Shorten URL** — Generate short links with auto-generated or custom slugs
 - 🔄 **Redirect** — Fast edge-based redirects with fail-safe 404 handling
 - 📊 **Analytics** — Track total clicks, unique visitors, and daily trends with privacy-first IP hashing
+- 📈 **Web Analytics** — Privacy-first page view tracking via Cloudflare Web Analytics
+- 🐛 **Error Tracking** — Production error monitoring via Sentry with source map support
 - 🎨 **QR Code** — Auto-generate QR codes for every short link with PNG download
 - 🛡️ **Security** — Automatic URL scanning with Google Safe Browsing API, rate limiting, and reserved slug protection
 - 🚩 **Report Abuse** — Built-in abuse reporting system for community safety
@@ -44,6 +49,8 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 | **QR Code** | qrcode | QR code generation |
 | **Security** | Google Safe Browsing API | Malicious URL detection |
 | **Deployment** | Vercel | Optimized for Next.js with edge functions |
+| **Error Tracking** | Sentry | Production error monitoring & alerting |
+| **Web Analytics** | Cloudflare Web Analytics | Privacy-first page view tracking |
 
 ---
 
@@ -82,6 +89,7 @@ Required environment variables:
 - `SAFE_BROWSING_API_KEY` — Google Safe Browsing API key
 - `NEXT_PUBLIC_APP_URL` — Your app URL (http://localhost:3000 for local dev)
 - `IP_HASH_SALT` — Random string for IP hashing (generate a secure random string)
+- `NEXT_PUBLIC_SENTRY_DSN` — Sentry DSN for error tracking (optional for local dev, required for production error tracking)
 
 **Getting Supabase Connection String:**
 1. Go to [supabase.com](https://supabase.com) → Create new project (free)
@@ -125,13 +133,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the app running.
 4. Deploy!
 
 Vercel will automatically build and deploy your app. The same Supabase database is used for both local development and production.
-
-### Self-Host with Docker (Optional)
-
-```bash
-# Coming soon
-docker compose up -d
-```
 
 ---
 
@@ -201,6 +202,12 @@ snip/
 
 ---
 
+## 📊 Quality & Performance
+
+- Lighthouse score: Performance 95, Accessibility 100, Best Practices 100, SEO 100 (audited on production, mobile)
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to submit issues, feature requests, and pull requests.
@@ -220,6 +227,8 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 - Database by [Supabase](https://supabase.com)
 - Icons by [Lucide](https://lucide.dev)
 - URL safety by [Google Safe Browsing](https://safebrowsing.google.com)
+- Error tracking by [Sentry](https://sentry.io)
+- Analytics by [Cloudflare](https://cloudflare.com)
 
 ---
 
