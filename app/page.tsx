@@ -203,7 +203,7 @@ export default function HomePage() {
                   Aslinya: {result.url}
                 </span>
               </div>
-              <div className="flex items-center gap-4 z-10 w-full md:w-auto justify-end">
+              <div className="flex items-start gap-4 z-10 w-full md:w-auto justify-end">
                 <QRCode value={result.shortUrl} />
               </div>
             </div>

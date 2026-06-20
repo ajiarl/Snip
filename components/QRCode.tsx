@@ -24,7 +24,7 @@ export default function QRCode({ value, size = 128, showDownload = true }: QRCod
       setIsGenerating(true);
       try {
         await QRCodeLib.toCanvas(canvasRef.current, value, {
-          width: 200,
+          width: size,
           margin: 2,
           color: {
             dark: "#000000",
