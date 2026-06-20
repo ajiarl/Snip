@@ -21,6 +21,7 @@ export default function QRCode({ value, size = 128, showDownload = true }: QRCod
         return;
       }
 
+      setIsGenerating(true);
       try {
         await QRCodeLib.toCanvas(canvasRef.current, value, {
           width: 200,
@@ -30,7 +31,9 @@ export default function QRCode({ value, size = 128, showDownload = true }: QRCod
             light: "#ffffff",
           },
         });
+        setIsGenerating(false);
       } catch (error) {
+        setIsGenerating(false);
         toast.error("Failed to generate QR code");
       }
     };
