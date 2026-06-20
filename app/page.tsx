@@ -12,7 +12,7 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-16 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(190,242,39,0.05)_0%,transparent_60%)]">
+      <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-8 py-16 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(190,242,39,0.20)_0%,transparent_60%)]">
         <div className="z-10 w-full max-w-3xl flex flex-col items-center text-center gap-10">
           <div className="flex flex-col gap-4">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground leading-tight tracking-tight">
