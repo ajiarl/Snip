@@ -3,6 +3,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 import "./globals.css";
 
 const geist = Geist({
@@ -51,6 +52,12 @@ export default function RootLayout({
           {children}
           <Toaster position="top-right" />
           <Analytics />
+          <Script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "69b71269522248e6987d2797d08ef6bd"}'
+            strategy="afterInteractive"
+          />
         </ThemeProvider>
       </body>
     </html>
