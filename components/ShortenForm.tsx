@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link2, Scissors, Copy, Shield } from "lucide-react";
+import { Link2, Scissors, Copy, Shield, ClipboardPaste } from "lucide-react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 
@@ -91,9 +91,9 @@ export default function ShortenForm() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
           <div className="flex flex-col md:flex-row gap-4 w-full">
             <div className="flex-grow relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center">
-              <Link2 className="text-muted-foreground ml-3 h-5 w-5" />
+              <Link2 className="text-muted-foreground ml-3 h-5 w-5 shrink-0" />
               <input
-                className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none"
+                className="flex-1 bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none min-w-0"
                 placeholder="Tempel URL panjang Anda di sini..."
                 type="url"
                 value={url}
@@ -101,6 +101,21 @@ export default function ShortenForm() {
                 required
                 disabled={loading}
               />
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    if (text) setUrl(text);
+                  } catch (err) {
+                    toast.error("Gagal membaca clipboard. Pastikan izin diberikan.");
+                  }
+                }}
+                className="text-muted-foreground hover:text-[#bef227] transition-colors p-2 mr-1 shrink-0"
+                title="Paste dari clipboard"
+              >
+                <ClipboardPaste className="h-4 w-4" />
+              </button>
             </div>
             <button
               type="submit"
