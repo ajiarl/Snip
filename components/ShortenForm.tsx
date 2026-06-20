@@ -14,6 +14,7 @@ import { urlSchema, slugSchema } from "@/lib/validate-url";
 import { fetcher } from "@/lib/fetcher";
 
 export default function ShortenForm() {
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'snip.to';
   const [url, setUrl] = useState("");
   const [customSlug, setCustomSlug] = useState("");
   const [loading, setLoading] = useState(false);
@@ -114,7 +115,7 @@ export default function ShortenForm() {
           <div className="flex items-center gap-4">
             <div className="relative glow-effect rounded-lg transition-all duration-300 border border-[#222222] bg-[#0a0a0a] flex items-center w-full md:w-1/2">
               <span className="text-muted-foreground pl-3 text-sm select-none font-mono">
-                snip.to/
+                {domain}/
               </span>
               <input
                 className="w-full bg-transparent border-none text-foreground px-3 py-3 focus:ring-0 placeholder:text-muted-foreground/50 outline-none font-mono text-sm"

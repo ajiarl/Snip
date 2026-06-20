@@ -23,6 +23,7 @@ export default function ReportDialog({
   triggerClassName = "text-muted-foreground hover:text-[#bef227] underline transition-colors text-sm",
   triggerText = "Laporkan link"
 }: ReportDialogProps) {
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'snip.to';
   const [open, setOpen] = useState(false);
   const [reportSlug, setReportSlug] = useState(slug || "");
   const [reason, setReason] = useState("");
@@ -94,7 +95,7 @@ export default function ReportDialog({
               Slug Link <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-2 bg-[#111111] border border-[#333333] rounded-lg px-3 py-2">
-              <span className="text-muted-foreground text-sm font-mono">snip.to/</span>
+              <span className="text-muted-foreground text-sm font-mono">{domain}/</span>
               <input
                 id="slug"
                 type="text"

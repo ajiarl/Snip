@@ -37,6 +37,7 @@ interface Link {
 }
 
 export default function DashboardPage() {
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'snip.to';
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -225,7 +226,7 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="font-mono text-sm font-bold text-[#bef227] bg-[#bef227]/10 px-2 py-1 rounded">
-                      snip.to/{link.slug}
+                      {domain}/{link.slug}
                     </span>
                     {link.disabled && (
                       <span className="text-xs uppercase font-bold text-muted-foreground border border-muted-foreground px-2 py-0.5 rounded">
@@ -309,7 +310,7 @@ export default function DashboardPage() {
                 }}
               >
                 <Lock className="w-4 h-4 text-muted-foreground/45 shrink-0" />
-                <span className="text-muted-foreground/30 font-mono select-none">snip.to/</span>
+                <span className="text-muted-foreground/30 font-mono select-none">{domain}/</span>
                 <span className="text-muted-foreground/80 font-mono font-medium truncate flex-1 select-all">
                   {editingLink?.slug || ""}
                 </span>
