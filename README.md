@@ -8,7 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
 
 ## 🔗 Live Demo
-**[https://snipid.vercel.app](https://snipid.vercel.app)**
+**[https://snipid.my.id](https://snipid.my.id)**
 
 Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supabase. Designed for developers who want full control over their data without sacrificing features or security.
 ![Snip Homepage](./docs/screenshots/homepage.png)
