@@ -92,15 +92,16 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Gagal menghapus link");
       }
 
       setLinks(links.filter((link) => link.id !== linkToDelete));
       toast.success("Link berhasil dihapus");
       setDeleteDialogOpen(false);
       setLinkToDelete(null);
-    } catch (error) {
-      toast.error("Gagal menghapus link");
+    } catch (error: any) {
+      toast.error(error.message || "Gagal menghapus link");
     } finally {
       setIsDeleting(false);
     }
