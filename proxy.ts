@@ -8,7 +8,7 @@ import { hashIP } from "@/lib/hash-ip";
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname === "/") {
+  if (pathname === "/" || pathname === "/not-found" || pathname.includes(".")) {
     return NextResponse.next();
   }
 
@@ -24,7 +24,7 @@ export async function proxy(request: NextRequest) {
     });
 
     if (!link || link.disabled) {
-      return NextResponse.rewrite(new URL("/not-found", process.env.NEXT_PUBLIC_APP_URL || "https://snip.to"));
+      return NextResponse.rewrite(new URL("/not-found", request.url));
     }
 
     // Record click in a non-blocking way
@@ -42,10 +42,12 @@ export async function proxy(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("Proxy error:", error);
-    return NextResponse.rewrite(new URL("/not-found", process.env.NEXT_PUBLIC_APP_URL || "https://snip.to"));
+    return NextResponse.rewrite(new URL("/not-found", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|dashboard|sitemap.xml|robots.txt|monitoring).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|dashboard|sitemap.xml|robots.txt|monitoring|not-found|.*\\..*).*)",
+  ],
 };

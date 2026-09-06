@@ -66,6 +66,18 @@ describe('proxy middleware', () => {
     expect(res.type).toBe('next');
   });
 
+  it('bypasses /not-found page', async () => {
+    const req = createMockRequest('/not-found');
+    const res = await proxy(req);
+    expect(res.type).toBe('next');
+  });
+
+  it('bypasses static files (e.g. /og-image.png)', async () => {
+    const req = createMockRequest('/og-image.png');
+    const res = await proxy(req);
+    expect(res.type).toBe('next');
+  });
+
   it('redirects to not-found if slug is empty', async () => {
     const req = createMockRequest('/');
     const res = await proxy(req);
