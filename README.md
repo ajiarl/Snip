@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 
 ## 🔗 Live Demo
 **[https://snipid.my.id](https://snipid.my.id)**
@@ -18,7 +19,7 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 ## ✨ Features
 
 - 🔗 **Shorten URL** — Generate short links with auto-generated or custom slugs
-- 🔄 **Redirect** — Fast redirects via dedicated Node.js middleware with fail-safe 404 handling
+- 🔄 **Redirect** — Fast redirects via Next.js middleware with privacy-first click tracking and fail-safe 404 handling
 - 📊 **Analytics** — Track total clicks, unique visitors, and daily trends with privacy-first IP hashing
 - 📈 **Web Analytics** — Privacy-first page view tracking via Cloudflare Web Analytics
 - 🐛 **Error Tracking** — Production error monitoring via Sentry with source map support
@@ -37,11 +38,13 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 |-------|-----------|---------|
 | **Framework** | Next.js 16 (App Router) | Modern React framework with server components |
 | **Language** | TypeScript 5.7 | Type-safe development |
+| **Runtime** | React 19 | UI rendering with concurrent features |
 | **UI Library** | shadcn/ui + Tailwind CSS v4 | Beautiful, accessible components |
+| **Theme** | next-themes | Dark/light mode management |
 | **Icons** | Lucide React | Clean, consistent iconography |
+| **Forms** | React Hook Form + Zod | Form state management and schema validation |
 | **ORM** | Drizzle ORM | Lightweight, edge-compatible database toolkit |
 | **Database** | Supabase Postgres | Managed PostgreSQL with free tier |
-| **Validation** | Zod | Schema validation for client & server |
 | **Toast** | Sonner | Elegant toast notifications |
 | **Charts** | Recharts | Interactive analytics visualization |
 | **QR Code** | qrcode | QR code generation |
@@ -49,6 +52,48 @@ Modern, self-hostable link shortener built with Next.js 16, TypeScript, and Supa
 | **Deployment** | Vercel | Optimized for Next.js with edge functions |
 | **Error Tracking** | Sentry | Production error monitoring & alerting |
 | **Web Analytics** | Cloudflare Web Analytics | Privacy-first page view tracking |
+| **Vercel Analytics** | @vercel/analytics | Vercel-native audience analytics |
+
+---
+
+## 🏗️ Architecture
+
+### Redirect Flow
+
+Short link redirects run entirely inside **Next.js Middleware** (`proxy.ts`) — before any React rendering:
+
+```
+Visitor → snipid.my.id/abc123
+    ↓ Next.js Middleware (proxy.ts)
+    ↓ DB lookup → slug found & active?
+    ├── Yes → 302 redirect to destination URL
+    │          + non-blocking click record (IP hashed for privacy)
+    └── No  → rewrite to /not-found page
+```
+
+The middleware matcher skips `/api`, `/_next`, `/dashboard`, static files, and `/not-found` to avoid redirect loops.
+
+### Database Schema
+
+Three tables managed by Drizzle ORM:
+
+| Table | Key Columns | Purpose |
+|-------|-------------|---------|
+| `links` | `slug`, `url`, `anon_id`, `disabled` | Stores all short links |
+| `clicks` | `link_id`, `ip_hash`, `clicked_at` | Per-click analytics records |
+| `reports` | `link_id`, `reason` | Abuse reports submitted by visitors |
+
+Cascading deletes: removing a link also removes its clicks and reports.
+
+### API Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/shorten` | Create a new short link |
+| `GET` | `/api/links` | Fetch all links for the current session |
+| `GET` | `/api/analytics/[slug]` | Get click analytics for a specific link |
+| `GET` | `/api/stats` | Get global stats (total links, clicks) |
+| `POST` | `/api/report` | Submit an abuse report |
 
 ---
 
@@ -83,11 +128,15 @@ cp .env.example .env
 ```
 
 Required environment variables:
-- `DATABASE_URL` — Your Supabase Postgres connection string
-- `SAFE_BROWSING_API_KEY` — Google Safe Browsing API key
-- `NEXT_PUBLIC_APP_URL` — Your app URL (http://localhost:3000 for local dev)
-- `IP_HASH_SALT` — Random string for IP hashing (generate a secure random string)
-- `NEXT_PUBLIC_SENTRY_DSN` — Sentry DSN for error tracking (optional for local dev, required for production error tracking)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | ✅ | Supabase Postgres connection string |
+| `SAFE_BROWSING_API_KEY` | ✅ | Google Safe Browsing API key |
+| `NEXT_PUBLIC_APP_URL` | ✅ | Your app URL (`http://localhost:3000` for local dev) |
+| `IP_HASH_SALT` | ✅ | Random string for privacy-safe IP hashing |
+| `NEXT_PUBLIC_SENTRY_DSN` | ⚠️ Optional | Sentry DSN (required for production error tracking) |
+| `GOOGLE_VERIFICATION_TOKEN` | ⚠️ Optional | Google Search Console domain verification token |
 
 **Getting Supabase Connection String:**
 1. Go to [supabase.com](https://supabase.com) → Create new project (free)
@@ -129,6 +178,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app running.
    - `NEXT_PUBLIC_APP_URL` (your production domain)
    - `IP_HASH_SALT`
    - `NEXT_PUBLIC_SENTRY_DSN` (your Sentry DSN for error tracking)
+   - `GOOGLE_VERIFICATION_TOKEN` (optional, for Google Search Console)
 4. Deploy!
 
 Vercel will automatically build and deploy your app. The same Supabase database is used for both local development and production.
@@ -179,8 +229,14 @@ snip/
 ├── app/                    # Next.js App Router pages
 │   ├── page.tsx           # Homepage (shorten form)
 │   ├── dashboard/         # Dashboard pages
+│   │   └── [slug]/        # Per-link analytics page
 │   ├── not-found.tsx      # 404 page
 │   └── api/               # API routes
+│       ├── shorten/       # POST /api/shorten
+│       ├── links/         # GET  /api/links
+│       ├── analytics/     # GET  /api/analytics/[slug]
+│       ├── stats/         # GET  /api/stats
+│       └── report/        # POST /api/report
 ├── components/            # React components
 │   ├── ui/                # shadcn/ui components
 │   ├── QRCode.tsx
@@ -195,7 +251,7 @@ snip/
 │   └── hash-ip.ts         # IP hashing for privacy
 ├── drizzle/               # Database schema & migrations
 │   └── schema.ts          # Drizzle schema definitions
-├── proxy.ts               # Redirect handler (Node.js runtime)
+├── proxy.ts               # Redirect handler (Next.js Middleware)
 └── reserved-slugs.json    # Reserved slug list
 ```
 
@@ -232,6 +288,3 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 ---
 
 **Made with ❤️ by [Aji Arlando](https://github.com/ajiarl)**
-
-### SEO & Analytics
-- To verify your domain on Google Search Console, add your token to GOOGLE_VERIFICATION_TOKEN in your environment variables.
